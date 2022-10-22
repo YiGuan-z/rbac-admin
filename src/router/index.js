@@ -73,6 +73,11 @@ export const constantRoutes = [
         name: 'Tree',
         component: () => import('@/views/tree/index'),
         meta: { title: 'Tree', icon: 'tree' }
+      },{
+        path: 'employeeManager',
+        name: 'EmployeeManager',
+        component: () => import('@/views/system/employeeManager/index'),
+        meta: { title: '员工管理', icon: 'tree' }
       }
     ]
   },
