@@ -6,44 +6,58 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
+// 页面标题配置
+const name = defaultSettings.title || 'Vue Wolfcode Template'
 
-// If your port is set to 80,
-// use administrator privileges to execute the command line.
-// For example, Mac: sudo npm run
-// You can change the port by the following methods:
-// port = 9528 npm run dev OR npm run dev --port = 9528
-const port = process.env.port || process.env.npm_config_port || 9528 // dev port
+// 项目端口配置, 可以通过环境配置文件中增加 port=xxx 来配置
+const port = process.env.port || process.env.npm_config_port || 9528
 
-// All configuration item explanations can be find in https://cli.vuejs.org/config/
+// vue 项目完整配置 https://cli.vuejs.org/config/
 module.exports = {
   /**
-   * You will need to set publicPath if you plan to deploy your site under a sub path,
-   * for example GitHub Pages. If you plan to deploy your site to https://foo.github.io/bar/,
-   * then publicPath should be set to "/bar/".
-   * In most cases please use '/' !!!
-   * Detail: https://cli.vuejs.org/config/#publicpath
+   * 公共资源访问基础路径
    */
   publicPath: '/',
+  /* 项目编译后输出目录, 类似 java 的 target */
   outputDir: 'dist',
+  /* 项目中动态引用的静态资源编译后的目录名称 */
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  // 关闭 eslint 告警与错误消息
+  lintOnSave: false,
   productionSourceMap: false,
+  /* 开发服务器与请求后端 api 的配置 */
   devServer: {
+    /* 项目启动端口 */
     port: port,
+    /* 启动后自动开启浏览器 */
     open: true,
+    /* eslint 相关配置 */
     overlay: {
+      // 关闭 eslint 告警与错误消息
       warnings: false,
-      errors: true
+      errors: false
     },
+    /* 后端 API 代理配置, 将符合规则的请求转发到后台 */
     proxy: {
-      "/dev-api": {
-        target: 'http://localhost:8080/',
+      // 以指定的前缀开始应用代理
+      [process.env.VUE_APP_BASE_API]: {
+        // 代理后的目标服务器地址(后台服务器地址)
+        target: 'http://localhost:8080',
+        // 是否允许跨域
         changeOrigin: true,
-        pathRewrite:{'^/dev-api':''}
+        // 路径重写: 转发请求时将指定前缀的请求替换为指定字符串
+        pathRewrite: {
+          // 将当前环境的基础 api 替换为空字符串
+          // 栗子: 当前为测试环境, 那么基础 url 为 /dev-api
+          //      发起请求完整路径: http://localhost:9528/dev-api/users/changeStatus
+          //      转发后的完整路径: http://localhost:8080/users/changeStatus
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
       }
     },
-    before: require('./mock/mock-server.js')
+    /* 前端模拟 api 接口服务, 在没有后端 api 时使用 */
+    after: require('./mock/mock-server.js'),
+    disableHostCheck: true
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

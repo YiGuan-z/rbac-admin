@@ -1,7 +1,5 @@
 <template>
-  <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
-  </div>
+  <h1>欢迎进入系统: {{ name }}</h1>
 </template>
 
 <script>

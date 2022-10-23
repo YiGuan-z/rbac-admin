@@ -1,18 +1,24 @@
 <template>
   <div :class="classObj" class="app-wrapper">
+    <!-- 提供按钮控制左侧菜单栏是否展示 -->
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar class="sidebar-container" />
+    <!-- 左侧菜单栏组件 -->
+    <sidebar class="hasTagsView sidebar-container" />
     <div class="main-container">
+      <!-- 样式固定为头部 -->
       <div :class="{'fixed-header':fixedHeader}">
+        <!-- 左侧顶部状态栏 -->
         <navbar />
+        <tags-view/>
       </div>
+      <!-- 左侧下方主要内容区域, 我们自己写页面的地方 -->
       <app-main />
     </div>
   </div>
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain } from './components'
+import { Navbar, Sidebar, AppMain, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 
 export default {
@@ -20,7 +26,8 @@ export default {
   components: {
     Navbar,
     Sidebar,
-    AppMain
+    AppMain,
+    TagsView
   },
   mixins: [ResizeMixin],
   computed: {

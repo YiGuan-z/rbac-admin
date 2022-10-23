@@ -1,29 +1,26 @@
 <template>
   <div class="navbar">
+    <!-- 收缩左侧菜单栏的按钮组件 -->
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
+    <!-- 收缩按钮旁边的导航条(面包屑)组件 -->
     <breadcrumb class="breadcrumb-container" />
 
+    <!-- 右侧头像/菜单 -->
     <div class="right-menu">
+      <!-- 鼠标移动后显示下拉框组件 -->
       <el-dropdown class="avatar-container" trigger="click">
+        <!-- 头像 -->
         <div class="avatar-wrapper">
+          <!-- 头像图片路径 -->
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <!-- 头像旁边的倒三角 -->
           <i class="el-icon-caret-bottom" />
         </div>
+        <!-- 下拉菜单 -->
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+          <el-dropdown-item @click.native="logout">
+            <span style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>

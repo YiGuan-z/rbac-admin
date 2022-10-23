@@ -3,8 +3,12 @@ import Vue from 'vue'
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en' // lang i18n
+import RightToolbar from '@/components/RightToolbar'
+import '@/assets/styles/element-variables.scss'
+import '@/assets/styles/index.scss'
+import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
+import {resetForm} from './utils'
+import plugins from './plugins' // plugins
 
 import '@/styles/index.scss' // global css
 
@@ -14,6 +18,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import SlideVerify from 'vue-monoplasty-slide-verify';
 
 /**
  * If you don't want to use mock-server
@@ -28,10 +33,15 @@ if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }
 
-// set ElementUI lang to EN
+// 全局挂载组件
+Vue.component('RightToolbar', RightToolbar)
+
+// 全局方法挂载
+Vue.prototype.resetForm = resetForm
+
 Vue.use(ElementUI, { locale })
-// 如果想要中文版 element-ui，按如下方式声明
-// Vue.use(ElementUI)
+Vue.use(plugins)
+Vue.use(SlideVerify)
 
 Vue.config.productionTip = false
 

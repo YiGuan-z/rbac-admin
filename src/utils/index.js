@@ -114,4 +114,12 @@ export function param2Obj(url) {
     }
   })
   return obj
-}export * from './object-utils'
+}
+
+// 表单重置
+export function resetForm(refName) {
+  if (this.$refs[refName]) {
+    this.$refs[refName].resetFields();
+  }
+}
+export * from './object-utils'
