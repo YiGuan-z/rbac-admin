@@ -24,7 +24,6 @@
           :data="employeeData"
           border
           style="width: 100%"
-          :default-sort="employeeData.id"
           @selection-change="handleAddIds"
         >
           <el-table-column type="selection" width="50"/>
@@ -122,9 +121,6 @@
           <el-form-item label="用户名">
             <el-input v-model="editForm.username"/>
           </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="editForm.password" type="password"/>
-          </el-form-item>
           <el-form-item label="邮箱">
             <el-input v-model="editForm.email"/>
           </el-form-item>
@@ -140,7 +136,7 @@
         </el-form>
 
         <span slot="footer" class="dialog-footer">
-          <el-button @click="visible = false">取 消</el-button>
+          <el-button @click="handleClose">取 消</el-button>
           <el-button type="primary" @click="handleSaveOrUpdate">确 定</el-button>
         </span>
       </el-dialog>
@@ -159,10 +155,11 @@
 </template>
 
 <script>
-import {deleteById, deleteByIds, getList} from "@/api/employee"
+import {deleteById, deleteByIds, getList, saveOrUpdate} from '@/api/employee'
+import {createObject} from "@/utils";
 
 export default {
-  name: "employeeManager",
+  name: 'EmployeeManager',
   data() {
     return {
       ids: [],
@@ -178,7 +175,7 @@ export default {
         labelWidth: '120px'
       },
       pageInfo: {},
-      //数据请求表单
+      // 数据请求表单
       queryObject: {
         keyword: null,
         current: 1,
@@ -193,56 +190,83 @@ export default {
     await this.getData()
   },
   methods: {
-    selectAllIds() {
-      const ids = this.employeeData.map(v => v.id);
-      if (this.ids.length > 0) {
-        //ids大于0就证明里面有被选择的数据
-        //对当前ids进行过滤，条件是this里面的ids
-        const thisIds = this.ids;
-        const filter = Object.values(ids).filter(v => thisIds.includes(v));
+    handleClose(){
+      this.visible=false;
+      this.clearForm(this.editForm)
+    },
+    openDallog({row}, title) {
+      this.visible = true;
+      this.editForm = createObject(row);
+      this.editTitle = title;
+    },
+    async handleSaveOrUpdate() {
+      const res = await saveOrUpdate(this.editForm);
+      console.log(res)
+      if (res['code'] === 200) {
+        this.$message.success('修改成功');
+        const {data} = res;
+        const filter = this.employeeData.filter(v => v.id !== data.id);
+        const resData = filter.concat(data);
+        this.employeeData = resData.sort((old, newVar) => old.id - newVar.id);
+      } else {
+        this.$message.warning(`修改失败`)
       }
-
+      this.visible=false;
+      this.clearForm(this.editForm)
+    },
+    selectAllIds() {
+      const ids = this.employeeData.map(v => v.id)
+      if (this.ids.length > 0) {
+        // ids大于0就证明里面有被选择的数据
+        // 对当前ids进行过滤，条件是this里面的ids
+        const thisIds = this.ids
+        const filter = Object.values(ids).filter(v => thisIds.includes(v))
+      }
+    },
+    clearForm(form){
+      Object.keys(form).forEach(v=>form[v]=null)
     },
     handleDeleteByIds() {
       const ids = []
       this.ids.forEach(value => {
-        const id = value.id;
+        const id = value.id
         ids.push(id)
       })
-      const {data, code} = deleteByIds(ids);
+      const {data, code} = deleteByIds(ids)
       this.getData()
-      this.$message.success("删除成功")
-
+      this.$message.success('删除成功')
     },
     async handleDeleteById({row}) {
       const {id} = row
-      const {data} = await deleteById(id);
+      const {data} = await deleteById(id)
       if (data === id) {
-        this.$message.success("删除成功")
+        this.$message.success('删除成功')
         await this.getData()
       } else {
-        this.$message.warning("删除失败")
+        this.$message.warning('删除失败')
       }
     },
     handleAddIds(row) {
-      this.ids = row;
+      this.ids = row
     },
     handleSizeChange(size) {
-      this.queryObject.limit = size;
-      this.getData();
+      this.queryObject.limit = size
+      this.getData()
     },
     handleCurrentChange(cur) {
-      this.queryObject.current = cur;
-      this.getData();
+      this.queryObject.current = cur
+      this.getData()
     },
     async getData() {
-      const res = await getList(this.queryObject);
+      const res = await getList(this.queryObject)
       const {data} = res
       Object.keys(data).forEach(key => {
-        if (key !== "list") {
-          this.pageInfo[key] = data[key];
+        if (key !== 'list') {
+          this.pageInfo[key] = data[key]
         }
-        this.employeeData = data[key];
+        if (key === "list") {
+          this.employeeData = data[key]
+        }
       })
     }
   }
