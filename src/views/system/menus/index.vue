@@ -13,7 +13,7 @@
         </el-form>
         <!--      展示-->
         <el-table
-          :data="departmentData"
+          :data="employeeData"
           border
           style="width: 100%"
           @selection-change="handleAddIds"
@@ -21,20 +21,71 @@
           <el-table-column type="selection" width="50"/>
           <el-table-column
             prop="id"
-            label="id"
-            width="120"
-          />
-          <el-table-column
-            prop="name"
-            label="角色名称"
-            width="120"
-          />
-          <el-table-column
-            prop="sn"
-            label="角色描述"
-            width="120"
+            label="编号"
+            width="50"
             :show-overflow-tooltip="true"
           />
+          <el-table-column
+            prop="component"
+            label="组件"
+            width="120"
+          />
+          <el-table-column
+            prop="nacreated_time"
+            label="创建时间"
+            width="120"
+          >
+            <template v-slot="scope">
+              {{ scope.row.created_time|dateTimeForMat }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="expression"
+            label="表达式"
+            :show-overflow-tooltip="true"
+          />
+          <el-table-column
+            prop="icon"
+            label="图标"
+          />
+          <el-table-column
+            prop="parent_id"
+            label="父组件编号"
+            :show-overflow-tooltip="true"
+          />
+          <!--显示当前状态-->
+          <el-table-column
+            prop="path"
+            label="路径"
+          />
+          <el-table-column
+            prop="seq"
+            label="序号"
+          />
+          <el-table-column
+            prop="status"
+            label="状态"
+          >
+            <template v-slot="scope">
+              <el-switch :active-value="0" :inactive-value="1" :value="scope.row.status"/>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="菜单类型"
+          >
+            <template v-slot="scope">
+              {{scope|typeFilter}}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="updated_time"
+            label="更新时间"
+          >
+            <template v-slot="scope">
+              {{ scope.row.updated_time|dateTimeForMat }}
+            </template>
+          </el-table-column>
           <!--显示操作按钮-->
           <el-table-column
             fixed="right"
@@ -63,19 +114,35 @@
     <div>
       <el-dialog
         v-loading="eleProp.eleLoadin"
-        :title="editTitle"
+        title="修改"
         :visible.sync="visible"
         width="30%"
         :modal="false"
       >
         <el-form ref="form" :model="editForm" label-width="80px">
-          <el-form-item label="角色名称">
-            <el-input v-model="editForm.name"/>
+          <el-form-item label="组件">
+            <el-input v-model="editForm['component']"/>
           </el-form-item>
-          <el-form-item label="角色描述">
-            <el-input v-model="editForm.sn"/>
+          <el-form-item label="权限表达式">
+            <el-input v-model="editForm['expression']"/>
+          </el-form-item>
+          <el-form-item label="图标">
+            <el-input v-model="editForm['icon']"/>
+          </el-form-item>
+          <el-form-item label="父组件id">
+            <el-input v-model="editForm['parent_id']"/>
+          </el-form-item>
+          <el-form-item label="组件状态">
+            <el-switch v-model="editForm['status']" :active-value="0" :inactive-value="1"/>
+          </el-form-item>
+          <el-form-item label="组件顺序">
+            <el-input v-model="editForm['seq']"/>
+          </el-form-item>
+          <el-form-item label="组件名">
+            <el-input v-model="editForm['title']"/>
           </el-form-item>
         </el-form>
+
         <span slot="footer" class="dialog-footer">
           <el-button @click="handleClose">取 消</el-button>
           <el-button type="primary" @click="handleSaveOrUpdate">确 定</el-button>
@@ -96,11 +163,11 @@
 </template>
 
 <script>
-import {deleteById, deleteByIds, getList, saveOrUpdate} from '@/api/role'
+import {deleteById, getList, saveOrUpdate} from '@/api/system/menu'
 import {createObject} from "@/utils";
 
 export default {
-  name: 'role',
+  name: 'menus',
   data() {
     return {
       ids: [],
@@ -108,7 +175,7 @@ export default {
         keyword: null
       },
       editForm: {},
-      departmentData: [],
+      employeeData: [],
       visible: false,
       editTitle: '修改',
       eleProp: {
@@ -125,15 +192,29 @@ export default {
       timed: null
     }
   },
+  filters: {
+    dateTimeForMat(date) {
+      if (date==null) return "暂未更新"
+      return new Date(date).toLocaleDateString()
+    },
+    typeFilter({row}){
+      const {type} = row
+      switch (type){
+        case 0 :return "目录";
+        case 1: return "菜单";
+        case 2: return "按钮";
+      }
+    }
+  },
   watch: {},
   async created() {
     // await getList(this.queryObject)
     await this.getData()
   },
   methods: {
-    handleAdd() {
-      this.editTitle = "角色名称";
-      this.visible = true;
+    handleAdd(){
+      this.editTitle="新增";
+      this.visible=true;
     },
     handleClose() {
       this.visible = false;
@@ -148,23 +229,32 @@ export default {
       const res = await saveOrUpdate(this.editForm);
       console.log(res)
       if (res['code'] === 200) {
-        this.$message.success('操作成功');
+        this.$message.success('修改成功');
         const {data} = res;
-        const filter = this.departmentData.filter(v => v.id !== data.id);
+        const filter = this.employeeData.filter(v => v.id !== data.id);
         const resData = filter.concat(data);
-        this.departmentData = resData.sort((old, newVar) => old.id - newVar.id);
+        this.employeeData = resData.sort((old, newVar) => old.id - newVar.id);
       } else {
-        this.$message.warning(`操作失败`)
+        this.$message.warning(`修改失败`)
       }
       this.visible = false;
       this.clearForm(this.editForm)
+    },
+    selectAllIds() {
+      const ids = this.employeeData.map(v => v.id)
+      if (this.ids.length > 0) {
+        // ids大于0就证明里面有被选择的数据
+        // 对当前ids进行过滤，条件是this里面的ids
+        const thisIds = this.ids
+        const filter = Object.values(ids).filter(v => thisIds.includes(v))
+      }
     },
     clearForm(form) {
       Object.keys(form).forEach(v => form[v] = null)
     },
     async handleDeleteById({row}) {
       const {id} = row
-      const {data} = await deleteById({id})
+      const {data} = await deleteById(id)
       if (data === id) {
         this.$message.success('删除成功')
         await this.getData()
@@ -191,7 +281,7 @@ export default {
           this.pageInfo[key] = data[key]
         }
         if (key === "list") {
-          this.departmentData = data[key]
+          this.employeeData = data[key]
         }
       })
     }

@@ -1,5 +1,5 @@
-import {get} from "@/utils/api-mock";
+import request from "@/utils/request";
 
-export function getRoutes() {
-  return get(`/vue-wolfcode-template/menu/routes`)
-}
+const api = process.env.VUE_APP_BASE_API
+
+export const getRoutes = () => request({url: `${api}/system/menu/routers`, method: 'get'})
