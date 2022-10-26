@@ -14,13 +14,14 @@
           border
           style="width: 100%"
           @selection-change="handleAddIds"
+          row-key="id"
         >
-          <el-table-column type="selection" width="50"/>
           <el-table-column
             prop="id"
             label="编号"
-            width="50"
+            width="150"
             :show-overflow-tooltip="true"
+            sortable
           />
           <el-table-column prop="title" label="组件标题"/>
           <el-table-column
@@ -67,8 +68,8 @@
             <template v-slot="scope">
               <el-switch :active-value="0"
                          :inactive-value="1"
-                         :value="scope.row.status"
-                         @click="handleChangeStatus(scope)"
+                         v-model="scope.row.status"
+                         @change="handleChangeStatus(scope)"
 
               />
             </template>
@@ -154,16 +155,6 @@
         </span>
       </el-dialog>
     </div>
-    <el-pagination
-      background
-      layout="total,sizes,prev, pager, next,jumper"
-      :total="pageInfo.total"
-      :current-change="pageInfo.current"
-      :page-sizes="[10,20,50]"
-      :page-size="10"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
   </div>
 </template>
 
@@ -187,7 +178,6 @@ export default {
         eleLoadin: false,
         labelWidth: '120px'
       },
-      pageInfo: {},
       // 数据请求表单
       queryObject: {
         keyword: null,
@@ -220,10 +210,9 @@ export default {
     await this.getData()
   },
   methods: {
-    handleChangeStatus({row}) {
-      console.log('dafsdf')
+    async handleChangeStatus({row}) {
       const {id} = row;
-      const {data, code} = changeStatus({id});
+      const {data, code} = await changeStatus({id});
       if (code === 200) {
         this.$message.success(`更改可见性成功`)
       } else {
@@ -295,16 +284,9 @@ export default {
       this.getData()
     },
     async getData() {
-      const res = await getList(this.queryObject)
+      const res = await getList()
       const {data} = res
-      Object.keys(data).forEach(key => {
-        if (key !== 'list') {
-          this.pageInfo[key] = data[key]
-        }
-        if (key === "list") {
-          this.employeeData = data[key]
-        }
-      })
+      this.employeeData = data
     }
   }
 }

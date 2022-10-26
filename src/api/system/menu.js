@@ -2,13 +2,10 @@ import request from "@/utils/request";
 
 const api = process.env.VUE_APP_BASE_API
 const module = '/system'
-export const getList = ({current, limit, keyword}) =>
+export const getList = () =>
   request({
     url: `${api}${module}/menu`,
     method: 'get',
-    params: {
-      current, limit, keyword
-    }
   })
 export const deleteById = (id) =>
   request({
@@ -38,7 +35,7 @@ export const saveOrUpdate = ({
   })
 
 export const changeStatus = ({id}) => request({
-  url:`${api}${module}/menu${id}`,
+  url:`${api}${module}/menu/${id}`,
   method:'patch'
 })
 
