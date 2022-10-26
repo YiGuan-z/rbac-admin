@@ -12,7 +12,7 @@ NProgress.configure({showSpinner: false}) // NProgress Configuration
  * 白名单配置
  * 配置在白名单中的路由可以直接访问, 不会被重定向到登录页
  */
-const whiteList = ['/login']
+const whiteList = ['/login','/redirect']
 
 /* 登录拦截器 => 路由守卫 */
 router.beforeEach(async (to, from, next) => {

@@ -16,19 +16,19 @@ export const deleteById = (id) =>
     method: 'delete'
   })
 export const saveOrUpdate = ({
-                       component,
-                       created_time,
-                       expression,
-                       icon,
-                       id,
-                       parent_id,
-                       path,
-                       seq,
-                       status,
-                       title,
-                       type,
-                       updated_time
-                     }) =>
+                               component,
+                               created_time,
+                               expression,
+                               icon,
+                               id,
+                               parent_id,
+                               path,
+                               seq,
+                               status,
+                               title,
+                               type,
+                               updated_time
+                             }) =>
   request({
     url: `${api}${module}/menu`,
     method: 'post',
@@ -36,4 +36,9 @@ export const saveOrUpdate = ({
       component, created_time, expression, icon, id, parent_id, path, seq, status, title, type, updated_time
     }
   })
+
+export const changeStatus = ({id}) => request({
+  url:`${api}${module}/menu${id}`,
+  method:'patch'
+})
 

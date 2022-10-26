@@ -4,9 +4,6 @@
       <!--    搜索-->
       <el-col :span="24">
         <el-form>
-          <el-form-item label="请输入关键字" :label-width="eleProp.labelWidth">
-            <el-input v-model="queryObject.keyword"/>
-          </el-form-item>
           <el-form-item>
             <el-button type="message" @click="handleAdd">新增</el-button>
           </el-form-item>
@@ -25,6 +22,7 @@
             width="50"
             :show-overflow-tooltip="true"
           />
+          <el-table-column prop="title" label="组件标题"/>
           <el-table-column
             prop="component"
             label="组件"
@@ -67,7 +65,12 @@
             label="状态"
           >
             <template v-slot="scope">
-              <el-switch :active-value="0" :inactive-value="1" :value="scope.row.status"/>
+              <el-switch :active-value="0"
+                         :inactive-value="1"
+                         :value="scope.row.status"
+                         @click="handleChangeStatus(scope)"
+
+              />
             </template>
           </el-table-column>
           <el-table-column
@@ -75,7 +78,9 @@
             label="菜单类型"
           >
             <template v-slot="scope">
-              {{scope|typeFilter}}
+              <el-tag v-if="scope.row.type===0" type="success">目录</el-tag>
+              <el-tag v-else-if="scope.row.type===1">菜单</el-tag>
+              <el-tag v-else type="warning">按钮</el-tag>
             </template>
           </el-table-column>
           <el-table-column
@@ -163,7 +168,7 @@
 </template>
 
 <script>
-import {deleteById, getList, saveOrUpdate} from '@/api/system/menu'
+import {deleteById, getList, saveOrUpdate, changeStatus} from '@/api/system/menu'
 import {createObject} from "@/utils";
 
 export default {
@@ -194,15 +199,18 @@ export default {
   },
   filters: {
     dateTimeForMat(date) {
-      if (date==null) return "暂未更新"
+      if (date == null) return "暂未更新"
       return new Date(date).toLocaleDateString()
     },
-    typeFilter({row}){
+    typeFilter({row}) {
       const {type} = row
-      switch (type){
-        case 0 :return "目录";
-        case 1: return "菜单";
-        case 2: return "按钮";
+      switch (type) {
+        case 0 :
+          return "目录";
+        case 1:
+          return "菜单";
+        case 2:
+          return "按钮";
       }
     }
   },
@@ -212,9 +220,22 @@ export default {
     await this.getData()
   },
   methods: {
-    handleAdd(){
-      this.editTitle="新增";
-      this.visible=true;
+    handleChangeStatus({row}) {
+      console.log('dafsdf')
+      const {id} = row;
+      const {data, code} = changeStatus({id});
+      if (code === 200) {
+        this.$message.success(`更改可见性成功`)
+      } else {
+        this.$message.success(`更改可见性失败`)
+        const back = this.employeeData.filter(v => v.id === id);
+        back.status = data === 0 ? 1 : 0;
+      }
+
+    },
+    handleAdd() {
+      this.editTitle = "新增";
+      this.visible = true;
     },
     handleClose() {
       this.visible = false;
