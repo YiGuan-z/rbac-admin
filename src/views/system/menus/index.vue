@@ -30,12 +30,12 @@
             width="120"
           />
           <el-table-column
-            prop="nacreated_time"
+            prop="nacreatedTime"
             label="创建时间"
             width="120"
           >
             <template v-slot="scope">
-              {{ scope.row.created_time|dateTimeForMat }}
+              {{ scope.row.createdTime|dateTimeForMat }}
             </template>
           </el-table-column>
           <el-table-column
@@ -85,11 +85,11 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="updated_time"
+            prop="updateTime"
             label="更新时间"
           >
             <template v-slot="scope">
-              {{ scope.row.updated_time|dateTimeForMat }}
+              {{ scope.row['updateTime']|dateTimeForMat }}
             </template>
           </el-table-column>
           <!--显示操作按钮-->
@@ -120,34 +120,45 @@
     <div>
       <el-dialog
         v-loading="eleProp.eleLoadin"
-        title="修改"
+        :title="editTitle"
         :visible.sync="visible"
         width="30%"
         :modal="false"
       >
-        <el-form ref="form" :model="editForm" label-width="80px">
-          <el-form-item label="组件">
-            <el-input v-model="editForm['component']"/>
-          </el-form-item>
-          <el-form-item label="权限表达式">
-            <el-input v-model="editForm['expression']"/>
-          </el-form-item>
-          <el-form-item label="图标">
-            <el-input v-model="editForm['icon']"/>
-          </el-form-item>
-          <el-form-item label="父组件id">
-            <el-input v-model="editForm['parent_id']"/>
-          </el-form-item>
-          <el-form-item label="组件状态">
-            <el-switch v-model="editForm['status']" :active-value="0" :inactive-value="1"/>
-          </el-form-item>
-          <el-form-item label="组件顺序">
-            <el-input v-model="editForm['seq']"/>
-          </el-form-item>
-          <el-form-item label="组件名">
-            <el-input v-model="editForm['title']"/>
-          </el-form-item>
-        </el-form>
+        <el-row :span="12">
+          <el-form ref="form" :model="editForm" label-width="80px">
+            <el-form-item label="组件">
+              <el-input v-model="editForm['component']"/>
+            </el-form-item>
+            <el-form-item label="权限表达式">
+              <el-input v-model="editForm['expression']"/>
+            </el-form-item>
+            <el-form-item label="图标">
+              <el-input v-model="editForm['icon']"/>
+            </el-form-item>
+            <el-form-item label="父组件id">
+              <el-input v-model="editForm['parent_id']"/>
+            </el-form-item>
+            <el-form-item label="组件状态">
+              <el-switch v-model="editForm['status']" :active-value="0" :inactive-value="1"/>
+            </el-form-item>
+            <el-form-item label="组件顺序">
+              <el-input v-model="editForm['seq']"/>
+            </el-form-item>
+            <el-form-item label="组件名">
+              <el-input v-model="editForm['title']"/>
+            </el-form-item>
+            <el-row :span="12">
+              <el-form-item label="类型">
+                <el-radio-group v-model="editForm['type']" size="mini">
+                  <el-radio :label="0">目录</el-radio>
+                  <el-radio :label="1">菜单</el-radio>
+                  <el-radio :label="2">按钮</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-row>
+          </el-form>
+        </el-row>
 
         <span slot="footer" class="dialog-footer">
           <el-button @click="handleClose">取 消</el-button>
