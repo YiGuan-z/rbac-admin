@@ -90,7 +90,7 @@
         direction="rtl"
         size="30x%"
         :before-close="handlePermission">
-        <el-transfer v-model="roleValues" :data="chooseData"/>
+        <el-transfer :titles="['待分配权限','已分配的权限']" v-model="roleValues" :data="chooseData"/>
         <el-button-group>
           <el-button @click="handleSavePermission">保存</el-button>
           <el-button @click="handlePermission">取消</el-button>
@@ -112,7 +112,7 @@
 
 <script>
 import {deleteById, getList, saveOrUpdate} from '@/api/role'
-import {saveRole} from '@/api/system/role-menu'
+import {saveRole, selectByPrimaryKey} from '@/api/system/role-menu'
 import {createObject} from "@/utils";
 import {getMenus} from "@/api/system/menu";
 
@@ -159,8 +159,11 @@ export default {
     })
   },
   methods: {
-    handleOpen({row}) {
+    async handleOpen({row}) {
       const {id} = row;
+      const {data}= await selectByPrimaryKey({id});
+      console.log(data)
+      this.roleValues=data
       this.editId = id;
       this.permissionDialogVisible = true
     },

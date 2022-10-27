@@ -196,6 +196,7 @@ export default {
       employeeData: [],
       visible: false,
       editTitle: '修改',
+      parent:[],
       eleProp: {
         eleLoadin: false,
         labelWidth: '120px'
@@ -230,7 +231,7 @@ export default {
   async created() {
     // await getList(this.queryObject)
     await this.getData()
-    const res = await getMenus();
+    const res = await getMenus({all:true});
     this.parent = res.data;
   },
   methods: {

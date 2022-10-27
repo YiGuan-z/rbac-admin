@@ -11,6 +11,7 @@ export const saveRole=({id,menuId})=>
       id, menuId
     }
   })
+export const selectByPrimaryKey=({id})=>request({url:`${api}${module}/roleMenu/${id}`,method:'get'})
 
 export const deleteById=({id})=>
   request({
