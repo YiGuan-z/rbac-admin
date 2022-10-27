@@ -137,7 +137,15 @@
               <el-input v-model="editForm['icon']"/>
             </el-form-item>
             <el-form-item label="父组件id">
-              <el-input v-model="editForm['parent_id']"/>
+              <!--              <el-input v-model="editForm['parent_id']"/>-->
+              <el-select v-model="editForm['parent_id']" clearable>
+                <el-option
+                  v-for="item in parent"
+                  :key="item.id"
+                  :label="item['title']"
+                  :value="item['id']">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="组件状态">
               <el-switch v-model="editForm['status']" :active-value="0" :inactive-value="1"/>
@@ -147,6 +155,9 @@
             </el-form-item>
             <el-form-item label="组件名">
               <el-input v-model="editForm['title']"/>
+            </el-form-item>
+            <el-form-item label="组件路径">
+              <el-input v-model="editForm['path']"/>
             </el-form-item>
             <el-row :span="12">
               <el-form-item label="类型">
@@ -170,7 +181,7 @@
 </template>
 
 <script>
-import {deleteById, getList, saveOrUpdate, changeStatus} from '@/api/system/menu'
+import {deleteById, getList, saveOrUpdate, changeStatus, getMenus} from '@/api/system/menu'
 import {createObject} from "@/utils";
 
 export default {
@@ -219,6 +230,8 @@ export default {
   async created() {
     // await getList(this.queryObject)
     await this.getData()
+    const res = await getMenus();
+    this.parent = res.data;
   },
   methods: {
     async handleChangeStatus({row}) {
