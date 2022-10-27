@@ -70,7 +70,7 @@ const actions = {
       getInfo(token).then(response => {
         // response = {code: 200, msg: 'success', data: {userInfo}}
         const { data } = response
-
+        console.log(data)
         // 如果获取不到用户信息
         if (!data) {
           return reject('验证失败, 请重新登录')
