@@ -41,6 +41,7 @@
             label="操作"
           >
             <template v-slot="scope">
+              <el-button type="primary" circle @click="handleOpen(scope)">分配权限</el-button>
               <el-button @click="openDallog(scope,'修改')">修改</el-button>
               <el-popconfirm
                 confirm-button-text="好的"
@@ -82,6 +83,20 @@
         </span>
       </el-dialog>
     </div>
+    <div>
+      <el-drawer
+        title="分配权限"
+        :visible.sync="permissionDialogVisible"
+        direction="rtl"
+        size="30x%"
+        :before-close="handlePermission">
+        <el-transfer v-model="roleValues" :data="chooseData"/>
+        <el-button-group>
+          <el-button @click="handleSavePermission">保存</el-button>
+          <el-button @click="handlePermission">取消</el-button>
+        </el-button-group>
+      </el-drawer>
+    </div>
     <el-pagination
       background
       layout="total,sizes,prev, pager, next,jumper"
@@ -96,8 +111,10 @@
 </template>
 
 <script>
-import {deleteById, deleteByIds, getList, saveOrUpdate} from '@/api/role'
+import {deleteById, getList, saveOrUpdate} from '@/api/role'
+import {saveRole} from '@/api/system/role-menu'
 import {createObject} from "@/utils";
+import {getMenus} from "@/api/system/menu";
 
 export default {
   name: 'role',
@@ -111,6 +128,10 @@ export default {
       departmentData: [],
       visible: false,
       editTitle: '修改',
+      permissionDialogVisible: false,
+      roleValues: [],
+      chooseData: [],
+      editId: undefined,
       eleProp: {
         eleLoadin: false,
         labelWidth: '120px'
@@ -129,8 +150,20 @@ export default {
   async created() {
     // await getList(this.queryObject)
     await this.getData()
+    const {data} = await getMenus({all: true})
+    this.chooseData = data.map(v => {
+      return {
+        label: v.title,
+        key: v.id
+      }
+    })
   },
   methods: {
+    handleOpen({row}) {
+      const {id} = row;
+      this.editId = id;
+      this.permissionDialogVisible = true
+    },
     handleAdd() {
       this.editTitle = "角色名称";
       this.visible = true;
@@ -138,6 +171,18 @@ export default {
     handleClose() {
       this.visible = false;
       this.clearForm(this.editForm)
+    },
+    handlePermission(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {
+        });
+    },
+    async handleSavePermission() {
+      await saveRole({id: this.editId, menuId: this.roleValues})
+      this.permissionDialogVisible = false;
     },
     openDallog({row}, title) {
       this.visible = true;

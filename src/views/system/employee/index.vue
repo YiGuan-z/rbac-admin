@@ -87,7 +87,7 @@
             label="操作"
           >
             <template v-slot="scope">
-              <el-button @click="openDallog(scope,'修改')">{{ editTitle }}</el-button>
+              <el-button @click="openDallog(scope,'修改')">修改</el-button>
               <el-popconfirm
                 confirm-button-text="好的"
                 cancel-button-text="不用了"
@@ -109,7 +109,7 @@
     <div>
       <el-dialog
         v-loading="eleProp.eleLoadin"
-        title="用户修改"
+        :title="editTitle"
         :visible.sync="visible"
         width="30%"
         :modal="false"

@@ -38,4 +38,4 @@ export const changeStatus = ({id}) => request({
   url:`${api}${module}/menu/${id}`,
   method:'patch'
 })
-export const getMenus=()=>request({url:`${api}${module}/menus`,method:'get'})
+export const getMenus=({all})=>request({url:`${api}${module}/menus`,method:'get',param:{all}})
