@@ -10,6 +10,16 @@ export const getList = ({current, limit, keyword}) =>
       current, limit, keyword
     }
   })
+export const getAll=()=>request({url:`${api}/role/infos`,method:'get'})
+export const selectByPrimaryKey=({id})=>request({url:`${api}/employee/role/${id}`})
+export const saveRole=({id,roles})=>
+  request({
+    url:`${api}/employee/role`,
+    method:'put',
+    data:{
+      id, roles
+    }
+  })
 export const saveOrUpdate = ({id, name, sn}) =>
   request({
     url: `${api}/role/info`,

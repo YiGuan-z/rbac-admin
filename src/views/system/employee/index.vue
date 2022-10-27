@@ -87,6 +87,7 @@
             label="操作"
           >
             <template v-slot="scope">
+              <el-button type="primary" circle @click="handleOpen(scope)">分配角色</el-button>
               <el-button @click="openDallog(scope,'修改')">修改</el-button>
               <el-popconfirm
                 confirm-button-text="好的"
@@ -106,6 +107,20 @@
       </el-col>
     </el-row>
 
+    <div>
+      <el-drawer
+        title="分配权限"
+        :visible.sync="eleProp.permissionDialogVisible"
+        direction="rtl"
+        size="30x%"
+        :before-close="handlePermission">
+        <el-transfer :titles="['待分配角色','已分配的角色']" v-model="roleValues" :data="chooseData"/>
+        <el-button-group>
+          <el-button @click="handleSavePermission">保存</el-button>
+          <el-button @click="handlePermission">取消</el-button>
+        </el-button-group>
+      </el-drawer>
+    </div>
     <div>
       <el-dialog
         v-loading="eleProp.eleLoadin"
@@ -156,7 +171,9 @@
 
 <script>
 import {deleteById, deleteByIds, getList, saveOrUpdate} from '@/api/employee'
+import {getAll, selectByPrimaryKey, saveRole} from '@/api/role'
 import {createObject} from "@/utils";
+
 
 export default {
   name: 'EmployeeManager',
@@ -168,11 +185,14 @@ export default {
       },
       editForm: {},
       employeeData: [],
+      roleValues: [],
+      chooseData: [],
       visible: false,
       editTitle: '修改',
       eleProp: {
         eleLoadin: false,
-        labelWidth: '120px'
+        labelWidth: '120px',
+        permissionDialogVisible: undefined
       },
       pageInfo: {},
       // 数据请求表单
@@ -188,10 +208,41 @@ export default {
   async created() {
     // await getList(this.queryObject)
     await this.getData()
+    const {data} = await getAll()
+    this.chooseData = data.map(v => {
+      return {
+        label: v.name,
+        key: v.id
+      }
+    })
   },
   methods: {
-    handleClose(){
-      this.visible=false;
+    async handleOpen({row}) {
+      const {id} = row;
+      const {data} = await selectByPrimaryKey({id});
+      this.roleValues = data
+      this.editId = id;
+      this.eleProp.permissionDialogVisible = true
+    },
+    async handleSavePermission() {
+      const {data, code} = await saveRole({id: this.editId, roles: this.roleValues});
+      if (code === 200) {
+        this.$message.success(`分配成功`)
+      } else {
+        this.$message.warning(`分配失败`)
+      }
+      this.permissionDialogVisible = false;
+    },
+    handlePermission(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {
+        });
+    },
+    handleClose() {
+      this.visible = false;
       this.clearForm(this.editForm)
     },
     openDallog({row}, title) {
@@ -211,7 +262,7 @@ export default {
       } else {
         this.$message.warning(`修改失败`)
       }
-      this.visible=false;
+      this.visible = false;
       this.clearForm(this.editForm)
     },
     selectAllIds() {
@@ -223,8 +274,8 @@ export default {
         const filter = Object.values(ids).filter(v => thisIds.includes(v))
       }
     },
-    clearForm(form){
-      Object.keys(form).forEach(v=>form[v]=null)
+    clearForm(form) {
+      Object.keys(form).forEach(v => form[v] = null)
     },
     handleDeleteByIds() {
       const ids = []

@@ -162,7 +162,6 @@ export default {
     async handleOpen({row}) {
       const {id} = row;
       const {data}= await selectByPrimaryKey({id});
-      console.log(data)
       this.roleValues=data
       this.editId = id;
       this.permissionDialogVisible = true
@@ -184,7 +183,12 @@ export default {
         });
     },
     async handleSavePermission() {
-      await saveRole({id: this.editId, menuId: this.roleValues})
+      const {data,code} = await saveRole({id: this.editId, menuId: this.roleValues});
+      if (code===200){
+        this.$message.success(`分配成功`)
+      }else {
+        this.$message.warning(`分配失败`)
+      }
       this.permissionDialogVisible = false;
     },
     openDallog({row}, title) {

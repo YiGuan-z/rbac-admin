@@ -9,12 +9,5 @@ export const getEmployeeRole=({current,limit,keyword})=>
       current,limit,keyword
     }
   })
-export const save=({employeeId,roleId})=>
-  request({
-    url:`${api}/employee/role`,
-    method:'post',
-    data:{
-      employee_id:employeeId,
-      role_id:roleId
-    }
-  })
+export const selectByPrimaryKey=({id})=>request({url:`${api}/employee/role/${id}`,method:'get'})
+export const selectAll=()=>request({url:`${api}/employee/role`})
