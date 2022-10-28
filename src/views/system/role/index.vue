@@ -13,7 +13,7 @@
         </el-form>
         <!--      展示-->
         <el-table
-          :data="departmentData"
+          :data="showData"
           border
           style="width: 100%"
           @selection-change="handleAddIds"
@@ -125,7 +125,7 @@ export default {
         keyword: null
       },
       editForm: {},
-      departmentData: [],
+      showData: [],
       visible: false,
       editTitle: '修改',
       permissionDialogVisible: false,
@@ -202,9 +202,9 @@ export default {
       if (res['code'] === 200) {
         this.$message.success('操作成功');
         const {data} = res;
-        const filter = this.departmentData.filter(v => v.id !== data.id);
+        const filter = this.showData.filter(v => v.id !== data.id);
         const resData = filter.concat(data);
-        this.departmentData = resData.sort((old, newVar) => old.id - newVar.id);
+        this.showData = resData.sort((old, newVar) => old.id - newVar.id);
       } else {
         this.$message.warning(`操作失败`)
       }
@@ -243,7 +243,7 @@ export default {
           this.pageInfo[key] = data[key]
         }
         if (key === "list") {
-          this.departmentData = data[key]
+          this.showData = data[key]
         }
       })
     }

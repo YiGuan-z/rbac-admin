@@ -10,7 +10,7 @@
         </el-form>
         <!--      展示-->
         <el-table
-          :data="employeeData"
+          :data="showData"
           border
           style="width: 100%"
           @selection-change="handleAddIds"
@@ -193,7 +193,7 @@ export default {
         keyword: null
       },
       editForm: {},
-      employeeData: [],
+      showData: [],
       visible: false,
       editTitle: '修改',
       parent:[],
@@ -242,7 +242,7 @@ export default {
         this.$message.success(`更改可见性成功`)
       } else {
         this.$message.success(`更改可见性失败`)
-        const back = this.employeeData.filter(v => v.id === id);
+        const back = this.showData.filter(v => v.id === id);
         back.status = data === 0 ? 1 : 0;
       }
 
@@ -266,9 +266,9 @@ export default {
       if (res['code'] === 200) {
         this.$message.success('修改成功');
         const {data} = res;
-        const filter = this.employeeData.filter(v => v.id !== data.id);
+        const filter = this.showData.filter(v => v.id !== data.id);
         const resData = filter.concat(data);
-        this.employeeData = resData.sort((old, newVar) => old.id - newVar.id);
+        this.showData = resData.sort((old, newVar) => old.id - newVar.id);
       } else {
         this.$message.warning(`修改失败`)
       }
@@ -276,7 +276,7 @@ export default {
       this.clearForm(this.editForm)
     },
     selectAllIds() {
-      const ids = this.employeeData.map(v => v.id)
+      const ids = this.showData.map(v => v.id)
       if (this.ids.length > 0) {
         // ids大于0就证明里面有被选择的数据
         // 对当前ids进行过滤，条件是this里面的ids
@@ -311,7 +311,7 @@ export default {
     async getData() {
       const res = await getList()
       const {data} = res
-      this.employeeData = data
+      this.showData = data
     }
   }
 }
