@@ -42,7 +42,7 @@ module.exports = {
       // 以指定的前缀开始应用代理
       [process.env.VUE_APP_BASE_API]: {
         // 代理后的目标服务器地址(后台服务器地址)
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8080/api/v1',
         // 是否允许跨域
         changeOrigin: true,
         // 路径重写: 转发请求时将指定前缀的请求替换为指定字符串
